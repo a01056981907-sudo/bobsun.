@@ -998,6 +998,27 @@
         .passion-back-main-btn:hover { background: #0284c7; transform: translateY(-2px) scale(1.05); box-shadow: 0 14px 30px rgba(2, 132, 199, 0.4); }
         .passion-footer-disclaimer { font-size: 12px; color: #94a3b8; font-family: monospace; margin-top: 10px; }
 
+        /* 移动端自适应补丁（仅在手机端生效，不影响电脑端） */
+        @media (max-width: 1024px) {
+            .bento-grid {
+                grid-template-columns: 1fr !important;
+            }
+            .tank-embedded-card {
+                width: 100% !important;
+                max-width: 100% !important;
+                box-sizing: border-box !important;
+            }
+            #main-dashboard {
+                padding: 16px !important;
+            }
+            .center-bottom-row {
+                grid-template-columns: 1fr !important;
+            }
+            .modal-info-sidebar {
+                width: 100% !important;
+            }
+        }
+
         /* 隐藏类 */
         .hidden { display: none !important; }
     </style>
