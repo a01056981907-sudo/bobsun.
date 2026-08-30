@@ -693,6 +693,7 @@
         }
         .tank-embedded-card {
             width: 820px;
+            max-width: 100%;
             margin: 0 auto;
             background: rgba(17, 24, 39, 0.88);
             backdrop-filter: blur(16px);
@@ -701,7 +702,60 @@
             box-shadow: 0 0 30px rgba(251, 191, 36, 0.3);
             padding: 20px;
             text-align: center;
+            box-sizing: border-box;
         }
+
+        /* ================= 手机端游戏虚拟键盘样式 ================= */
+        .mobile-game-controls {
+            display: none; /* 默认电脑端隐藏 */
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 16px;
+            padding: 0 10px;
+        }
+        .dpad-container {
+            position: relative;
+            width: 140px;
+            height: 140px;
+        }
+        .dpad-btn {
+            position: absolute;
+            background: rgba(31, 41, 55, 0.95);
+            border: 2px solid #fbbf24;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            cursor: pointer;
+            user-select: none;
+            -webkit-user-select: none;
+            transition: background 0.1s;
+        }
+        .dpad-btn:active { background: #4b5563; }
+        .dpad-up { top: 0; left: 45px; width: 50px; height: 45px; border-radius: 10px 10px 4px 4px; }
+        .dpad-down { bottom: 0; left: 45px; width: 50px; height: 45px; border-radius: 4px 4px 10px 10px; }
+        .dpad-left { top: 45px; left: 0; width: 45px; height: 50px; border-radius: 10px 4px 4px 10px; }
+        .dpad-right { top: 45px; right: 0; width: 45px; height: 50px; border-radius: 4px 10px 10px 4px; }
+        .dpad-center { top: 45px; left: 45px; width: 50px; height: 50px; background: #111827; border: 2px solid #fbbf24; border-radius: 50%; pointer-events: none; }
+
+        .fire-btn-mobile {
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            background: radial-gradient(circle, #ef4444 0%, #b91c1c 100%);
+            border: 3px solid #fbbf24;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 15px rgba(239, 68, 68, 0.6);
+            cursor: pointer;
+            font-size: 32px;
+            user-select: none;
+            -webkit-user-select: none;
+            transition: transform 0.1s;
+        }
+        .fire-btn-mobile:active { transform: scale(0.92); }
 
         /* ================= 5. 全屏弹窗界面 ================= */
         .custom-screen-modal {
@@ -998,6 +1052,30 @@
         .passion-back-main-btn:hover { background: #0284c7; transform: translateY(-2px) scale(1.05); box-shadow: 0 14px 30px rgba(2, 132, 199, 0.4); }
         .passion-footer-disclaimer { font-size: 12px; color: #94a3b8; font-family: monospace; margin-top: 10px; }
 
+        /* ================= 手机端自适应适配样式（绝对不影响电脑端） ================= */
+        @media screen and (max-width: 900px) {
+            #main-dashboard {
+                padding: 16px 12px 40px !important;
+            }
+            .bento-grid {
+                grid-template-columns: 1fr !important;
+                gap: 16px !important;
+            }
+            .tank-embedded-card {
+                width: 100% !important;
+                padding: 14px !important;
+            }
+            #tankGameCanvas {
+                width: 100% !important;
+                max-width: 100% !important;
+                height: auto !important;
+                aspect-ratio: 760 / 420;
+            }
+            .mobile-game-controls {
+                display: flex !important; /* 手机端游戏开始后展示虚拟键盘 */
+            }
+        }
+
         /* 隐藏类 */
         .hidden { display: none !important; }
     </style>
@@ -1183,7 +1261,7 @@
             </div>
         </section>
 
-        <!-- ================= 4. 坦克大战小游戏板块（独立全新大板块，嵌入网页内） ================= -->
+        <!-- ================= 4. 坦克大战小游戏板块 ================= -->
         <section class="tank-battle-section">
             <div>
                 <div class="practice-header-tag" style="color: #fbbf24;">● MINI_GAME // 坦克大战演练场</div>
@@ -1213,6 +1291,18 @@
                         <div>击毁: <span id="tank-kill-ui" style="color: #4ade80;">0</span></div>
                     </div>
                     <canvas id="tankGameCanvas" width="760" height="420" style="background-color: #050b14; display: block; margin: 0 auto; border-radius: 6px; border: 2px solid #4b5563;"></canvas>
+                    
+                    <!-- 手机端虚拟控制键盘（点开始游戏后在手机端显示） -->
+                    <div class="mobile-game-controls">
+                        <div class="dpad-container">
+                            <div class="dpad-btn dpad-up" id="btn-up">▲</div>
+                            <div class="dpad-btn dpad-left" id="btn-left">◀</div>
+                            <div class="dpad-center"></div>
+                            <div class="dpad-btn dpad-right" id="btn-right">▶</div>
+                            <div class="dpad-btn dpad-down" id="btn-down">▼</div>
+                        </div>
+                        <div class="fire-btn-mobile" id="btn-fire" title="发射炮弹">🔥</div>
+                    </div>
                 </div>
 
                 <!-- 控制与地图切换 -->
@@ -1652,7 +1742,7 @@
             });
         }
 
-        // ================= 坦克大战小游戏引擎（大坦克与完全独立内嵌） =================
+        // ================= 坦克大战小游戏引擎 =================
         const tankCanvas = document.getElementById('tankGameCanvas');
         const tankCtx = tankCanvas ? tankCanvas.getContext('2d') : null;
 
@@ -1695,6 +1785,32 @@
         });
         window.addEventListener('keyup', e => { tankKeys[e.key] = false; });
 
+        // 手机虚拟按键绑定
+        function bindTouchButton(elemId, keyName, isAction=false) {
+            const el = document.getElementById(elemId);
+            if (!el) return;
+            const press = (e) => {
+                e.preventDefault();
+                tankKeys[keyName] = true;
+                if (isAction && tankGameStarted && !tankIsPaused) {
+                    tankPlayerShoot();
+                }
+            };
+            const release = (e) => {
+                e.preventDefault();
+                tankKeys[keyName] = false;
+            };
+            el.addEventListener('mousedown', press);
+            el.addEventListener('mouseup', release);
+            el.addEventListener('touchstart', press, {passive: false});
+            el.addEventListener('touchend', release, {passive: false});
+        }
+        bindTouchButton('btn-up', 'ArrowUp');
+        bindTouchButton('btn-down', 'ArrowDown');
+        bindTouchButton('btn-left', 'ArrowLeft');
+        bindTouchButton('btn-right', 'ArrowRight');
+        bindTouchButton('btn-fire', ' ', true);
+
         class GameTank {
             constructor(x, y, color, isPlayer=false) {
                 this.x = x; this.y = y; this.color = color; this.isPlayer = isPlayer;
@@ -1709,7 +1825,6 @@
                 else if(this.dy === 1) angle = Math.PI;
                 tankCtx.rotate(angle);
 
-                // 显著放大的坦克身躯尺寸 (32x32 装甲 + 履带与炮管)
                 tankCtx.fillStyle = '#111827';
                 tankCtx.fillRect(-20, -18, 8, 36); tankCtx.fillRect(12, -18, 8, 36);
                 tankCtx.fillStyle = this.color; tankCtx.fillRect(-16, -16, 32, 32);
@@ -1740,7 +1855,6 @@
                 tankWalls.push(new GameWall(0, y, 16, 20, 'steel'));
                 tankWalls.push(new GameWall(tankCanvas.width-16, y, 16, 20, 'steel'));
             }
-            // 中央精美字母 “S” 身份标识钢板矩阵
             for(let x=320; x<=440; x+=20) tankWalls.push(new GameWall(x, 100, 20, 20, 'steel'));
             for(let y=120; y<=170; y+=20) tankWalls.push(new GameWall(320, y, 20, 20, 'steel'));
             for(let x=320; x<=440; x+=20) tankWalls.push(new GameWall(x, 170, 20, 20, 'steel'));
@@ -1899,7 +2013,6 @@
             tankCtx.fillStyle = t.bg;
             tankCtx.fillRect(0, 0, tankCanvas.width, tankCanvas.height);
 
-            // 校园背景水印
             tankCtx.save();
             tankCtx.font = 'bold 32px sans-serif'; tankCtx.fillStyle = t.grid;
             tankCtx.textAlign = 'center'; tankCtx.textBaseline = 'middle';
@@ -1930,7 +2043,7 @@
         }
         tankGameLoop();
 
-        // ================= 23组画廊、地球、音频、弹窗等全部原有逻辑 =================
+        // ================= 其余画廊、地球、音频、弹窗逻辑 =================
         const galleryDataset = [
             { id: 1, file: "1.jpg", type: "image", title: "日落", desc: "暮色漫过海平面，夕阳在云层与波光间洒下碎金，记录下这一刻的宁静与温柔。" },
             { id: 2, file: "2.jpg", type: "image", title: "日落", desc: "晚霞如画，金红色的光晕将天地染透，余晖未尽，步履不停。" },
@@ -1980,6 +2093,7 @@
                     if (!anyVideoPlaying && bgMusicWasPlayingBeforeVideo && bgMusic) {
                         bgMusic.play().then(() => {
                             if (audioToggleBtn) audioToggleBtn.classList.add('music-playing');
+                            bgMusicWasPlayingBeforeVideo = true;
                         }).catch(() => {});
                     }
                 }, 200);
@@ -2160,47 +2274,6 @@
             });
             earthCloudMesh = new THREE.Mesh(cloudGeo, cloudMat);
             earthSpinGroup.add(earthCloudMesh);
-
-            const AtmosphereHaloShader = {
-                uniforms: { uSunDirection: { value: sunDirection } },
-                vertexShader: `
-                    varying vec3 vNormal;
-                    varying vec3 vPosition;
-                    void main() {
-                        vNormal = normalize(normalMatrix * normal);
-                        vPosition = (modelMatrix * vec4(position, 1.0)).xyz;
-                        gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
-                    }
-                `,
-                fragmentShader: `
-                    uniform vec3 uSunDirection;
-                    varying vec3 vNormal;
-                    varying vec3 vPosition;
-                    void main() {
-                        vec3 normal = normalize(vNormal);
-                        vec3 viewDir = normalize(cameraPosition - vPosition);
-                        vec3 sunDir = normalize(uSunDirection);
-                        float rim = pow(0.7 - dot(normal, viewDir), 3.6);
-                        float sunFacing = max(0.0, dot(sunDir, viewDir) * 0.5 + 0.5);
-                        vec3 haloColor = vec3(0.18, 0.55, 1.0);
-                        float alpha = clamp(rim * 1.2 * sunFacing, 0.0, 0.75);
-                        gl_FragColor = vec4(haloColor, alpha);
-                    }
-                `
-            };
-
-            const haloGeo = new THREE.SphereGeometry(earthRadius * 1.025, 64, 64);
-            const haloMat = new THREE.ShaderMaterial({
-                uniforms: AtmosphereHaloShader.uniforms,
-                vertexShader: AtmosphereHaloShader.vertexShader,
-                fragmentShader: AtmosphereHaloShader.fragmentShader,
-                side: THREE.BackSide,
-                transparent: true,
-                blending: THREE.AdditiveBlending,
-                depthWrite: false
-            });
-            const haloMesh = new THREE.Mesh(haloGeo, haloMat);
-            earthTiltGroup.add(haloMesh);
 
             const starCount = 500;
             const starGeo = new THREE.BufferGeometry();
