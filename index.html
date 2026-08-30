@@ -693,7 +693,6 @@
         }
         .tank-embedded-card {
             width: 820px;
-            max-width: 100%;
             margin: 0 auto;
             background: rgba(17, 24, 39, 0.88);
             backdrop-filter: blur(16px);
@@ -702,12 +701,11 @@
             box-shadow: 0 0 30px rgba(251, 191, 36, 0.3);
             padding: 20px;
             text-align: center;
-            box-sizing: border-box;
         }
 
-        /* ================= 手机端游戏虚拟键盘样式 ================= */
+        /* 手机端游戏虚拟控制键盘样式 */
         .mobile-game-controls {
-            display: none; /* 默认电脑端隐藏 */
+            display: none;
             justify-content: space-between;
             align-items: center;
             margin-top: 16px;
@@ -1052,7 +1050,7 @@
         .passion-back-main-btn:hover { background: #0284c7; transform: translateY(-2px) scale(1.05); box-shadow: 0 14px 30px rgba(2, 132, 199, 0.4); }
         .passion-footer-disclaimer { font-size: 12px; color: #94a3b8; font-family: monospace; margin-top: 10px; }
 
-        /* ================= 手机端自适应适配样式（绝对不影响电脑端） ================= */
+        /* ================= 手机端自适应适配样式（完全保留电脑端原样） ================= */
         @media screen and (max-width: 900px) {
             #main-dashboard {
                 padding: 16px 12px 40px !important;
@@ -1060,6 +1058,15 @@
             .bento-grid {
                 grid-template-columns: 1fr !important;
                 gap: 16px !important;
+            }
+            .center-bottom-row {
+                grid-template-columns: 1fr !important;
+            }
+            .card-hero-big {
+                padding: 24px 20px !important;
+            }
+            .hero-title {
+                font-size: 32px !important;
             }
             .tank-embedded-card {
                 width: 100% !important;
@@ -1072,7 +1079,31 @@
                 aspect-ratio: 760 / 420;
             }
             .mobile-game-controls {
-                display: flex !important; /* 手机端游戏开始后展示虚拟键盘 */
+                display: flex !important;
+            }
+            .contact-nav-bar {
+                padding: 0 16px !important;
+            }
+            .social-nav-group {
+                gap: 8px !important;
+            }
+            .social-circle-btn {
+                width: 36px !important;
+                height: 36px !important;
+            }
+            .social-circle-btn svg {
+                width: 18px !important;
+                height: 18px !important;
+            }
+            .passion-split-section {
+                grid-template-columns: 1fr !important;
+                padding: 24px 20px !important;
+            }
+            .passion-nav-header {
+                padding: 16px 20px !important;
+            }
+            .passion-container {
+                padding: 16px 16px !important;
             }
         }
 
@@ -1292,7 +1323,7 @@
                     </div>
                     <canvas id="tankGameCanvas" width="760" height="420" style="background-color: #050b14; display: block; margin: 0 auto; border-radius: 6px; border: 2px solid #4b5563;"></canvas>
                     
-                    <!-- 手机端虚拟控制键盘（点开始游戏后在手机端显示） -->
+                    <!-- 手机端虚拟控制键盘 -->
                     <div class="mobile-game-controls">
                         <div class="dpad-container">
                             <div class="dpad-btn dpad-up" id="btn-up">▲</div>
@@ -2043,7 +2074,7 @@
         }
         tankGameLoop();
 
-        // ================= 其余画廊、地球、音频、弹窗逻辑 =================
+        // ================= 23组画廊、地球、音频、弹窗逻辑 =================
         const galleryDataset = [
             { id: 1, file: "1.jpg", type: "image", title: "日落", desc: "暮色漫过海平面，夕阳在云层与波光间洒下碎金，记录下这一刻的宁静与温柔。" },
             { id: 2, file: "2.jpg", type: "image", title: "日落", desc: "晚霞如画，金红色的光晕将天地染透，余晖未尽，步履不停。" },
